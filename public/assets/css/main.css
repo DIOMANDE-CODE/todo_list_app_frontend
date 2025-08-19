@@ -1,0 +1,125 @@
+/* css/style.css */
+
+/* --- Variables & Globals --- */
+:root {
+    --primary-color: #0d6efd;
+    --dark-color: #212529;
+    --light-color: #f8f9fa;
+    --sidebar-width: 280px;
+    --border-radius: 0.5rem;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--light-color);
+}
+
+/* --- Layout: Sidebar + Main Content --- */
+.sidebar {
+    width: var(--sidebar-width);
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 100;
+}
+
+.sidebar .nav-link {
+    font-size: 1.05rem;
+    padding: 0.75rem 1rem;
+    border-radius: var(--border-radius);
+    margin-bottom: 0.25rem;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.sidebar .nav-link:hover, .sidebar .nav-link.active {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #fff !important;
+}
+
+.sidebar .nav-link .bi {
+    font-size: 1.2rem;
+}
+
+.main-content {
+    margin-left: var(--sidebar-width);
+    width: calc(100% - var(--sidebar-width));
+    transition: margin-left 0.3s;
+}
+
+/* --- Auth Pages Specific Styles --- */
+.auth-body {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+.auth-body .card {
+    transition: all 0.3s ease;
+}
+.auth-body .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 1rem 3rem rgba(0,0,0,.175)!important;
+}
+
+/* --- Kanban Board & Task Cards --- */
+.kanban-column {
+    background-color: #e9ecef;
+    min-height: 500px;
+}
+
+.task-card {
+    cursor: pointer;
+    border: 1px solid #dee2e6;
+    transition: all 0.2s ease-in-out;
+    border-left: 4px solid var(--primary-color);
+}
+
+.task-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+    border-left-color: #0b5ed7;
+}
+
+.avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid white;
+    margin-left: -10px;
+}
+.task-users .avatar:first-child {
+    margin-left: 0;
+}
+.avatar-add {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: #e9ecef;
+    border: 2px dashed #adb5bd;
+    color: #6c757d;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: -10px;
+    cursor: pointer;
+}
+
+/* --- Responsive Design --- */
+@media (max-width: 768px) {
+    .sidebar {
+        left: -100%; /* Hide sidebar by default on smaller screens */
+    }
+    .main-content {
+        width: 100%;
+        margin-left: 0;
+    }
+    /* A toggle button would be needed in JS to show/hide the sidebar */
+    
+    header.d-flex {
+        flex-direction: column;
+        align-items: flex-start !important;
+    }
+    header.d-flex .d-flex {
+        margin-top: 1rem;
+        width: 100%;
+    }
+}
