@@ -23,6 +23,9 @@ export default function Sidebar() {
     try {
       const response = await api.get("api/users/info/")
       const data = response.data;
+      console.log(data);
+      
+      localStorage.setItem("email_connecté",data.account_email)
       setCompte(data);
     } catch (err: unknown) {
       const axiosError = err as AxiosError;

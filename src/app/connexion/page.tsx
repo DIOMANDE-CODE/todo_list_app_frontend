@@ -7,6 +7,7 @@ import { setTokens } from "@/lib/auth";
 import { AxiosError } from "axios";
 import axios from "axios";
 import { Eye, EyeOff } from "lucide-react";
+import Preloader from "../components/preloader/preloader";
 
 interface ErrorResponse {
   error: string;
@@ -18,8 +19,10 @@ export default function Connexion() {
   const [erreur, setErreur] = useState("");
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
+  const [showPreloader, setShowPreloader] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
+    setShowPreloader(true);
     e.preventDefault();
 
     try {
@@ -51,11 +54,16 @@ export default function Connexion() {
         setAccount_email("");
         setPassword("");
       }
+    } finally {
+      setShowPassword(false);
     }
   };
 
   return (
     <div className="auth-body">
+      {
+        showPreloader && <Preloader></Preloader>
+      }
       <div className="container">
         <div className="row justify-content-center align-items-center vh-100">
           <div className="col-md-5 col-lg-6">
@@ -92,12 +100,19 @@ export default function Connexion() {
                   <div className="mb-3">
                     <label htmlFor="password" className="form-label">
                       Mot de passe {""}
-                      <span onClick = {() => setShowPassword(!showPassword)} style={{cursor:"pointer"}} >
-                        {showPassword ? <Eye size={16}/>  : <EyeOff size={16} />}
+                      <span
+                        onClick={() => setShowPassword(!showPassword)}
+                        style={{ cursor: "pointer" }}
+                      >
+                        {showPassword ? (
+                          <Eye size={16} />
+                        ) : (
+                          <EyeOff size={16} />
+                        )}
                       </span>
                     </label>
                     <input
-                      type={showPassword ? "text":"password"}
+                      type={showPassword ? "text" : "password"}
                       className="form-control form-control-lg"
                       id="password"
                       value={password}
@@ -106,7 +121,7 @@ export default function Connexion() {
                     />
                   </div>
                   <div className="d-flex justify-content-between align-items-center mb-4">
-                    <a href="#" className="small">
+                    <a href="/change_password/reset_password/" className="small">
                       Mot de passe oublié ?
                     </a>
                   </div>

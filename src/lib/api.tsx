@@ -36,7 +36,7 @@ api.interceptors.response.use(
       return Promise.reject(error);
     }
 
-    // Si access token expiré → essayer refresh
+    // Si access token expiré, essayer refresh
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 

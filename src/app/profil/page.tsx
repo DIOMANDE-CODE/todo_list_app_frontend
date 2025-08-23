@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import React from "react";
 import api from "@/lib/api";
 import { getAccessToken } from "@/lib/auth";
+import Preloader from "../components/preloader/preloader";
 
 export default function Profil() {
   interface Compte {
@@ -20,6 +21,7 @@ export default function Profil() {
   const [compte, setCompte] = useState<Compte>({});
   const [successMessage, setSuccessMessage] = useState("");
   const router = useRouter();
+  const [loading, setLoading] = useState(true);
 
   // Fonction pour charger les données de l"utilisateur
   const getCompte = async () => {
@@ -34,6 +36,8 @@ export default function Profil() {
       if (status === 400) {
         console.log(axiosError);
       }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -82,6 +86,7 @@ export default function Profil() {
   }, []);
   return (
     <div className="d-flex">
+      {loading && <Preloader></Preloader>}
       <Sidebar></Sidebar>
       <main className="main-content p-4">
         <header className="d-flex justify-content-between align-items-center pb-3 mb-4 border-bottom">

@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import api from "@/lib/api";
 import { getAccessToken } from "@/lib/auth";
+import Preloader from "../preloader/preloader";
 
 export default function TacheAFaire({
   onSelectedTache,
@@ -35,6 +36,7 @@ export default function TacheAFaire({
 
   const [tasks, setTasks] = useState<Tache[]>([]);
   const router = useRouter();
+  const [loading, setLoading] = useState(true);
 
   // fonction pour lister les taches
   const listTasks = async () => {
@@ -42,7 +44,13 @@ export default function TacheAFaire({
       const response = await api.get("tache/list/");
 
       const data = response.data;
-      if (data) {
+      console.log(response.status);
+
+      if (response.status === 204) {
+        console.log(data);
+
+        return;
+      } else {
         const tache_to_do = data.filter(
           (tache: Tache) => tache.status_tache === "à faire"
         );
@@ -52,6 +60,8 @@ export default function TacheAFaire({
       }
     } catch (err) {
       console.error("Erreur de récupération des tâches :", err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -87,6 +97,7 @@ export default function TacheAFaire({
 
   return (
     <div className="col-md-4">
+      {loading && <Preloader></Preloader>}
       <div className="kanban-column p-3 rounded-3">
         <h5 className="mb-3">
           <i className="bi bi-card-list me-2" /> À Faire{" "}

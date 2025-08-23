@@ -5,6 +5,7 @@ import { useState } from "react";
 import { AxiosError } from "axios";
 import axios from "axios";
 import { Eye, EyeOff } from "lucide-react";
+import Preloader from "../components/preloader/preloader";
 
 interface ErrorResponse {
   error: string;
@@ -17,7 +18,10 @@ export default function Inscription() {
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [showPreloader, setShowPreloader] = useState(false);
+
   const inscrire = async (e: React.FormEvent) => {
+    setShowPreloader(true);
     setErrorMessage("");
     setSuccessMessage("");
     e.preventDefault();
@@ -48,10 +52,13 @@ export default function Inscription() {
       } else {
         console.log(axiosError);
       }
+    } finally {
+      setShowPreloader(false);
     }
   };
   return (
     <div className="auth-body">
+      {showPreloader && <Preloader></Preloader>}
       <div className="container">
         <div className="row justify-content-center align-items-center vh-100">
           <div className="col-md-5 col-lg-6">
@@ -120,12 +127,19 @@ export default function Inscription() {
                   <div className="mb-3">
                     <label htmlFor="password" className="form-label">
                       Mot de passe{" "}
-                      <span onClick={() => setShowPassword(!showPassword)} style={{ cursor: "pointer" }}>
-                        { showPassword ? <Eye size={16} /> : <EyeOff size={16} /> }
+                      <span
+                        onClick={() => setShowPassword(!showPassword)}
+                        style={{ cursor: "pointer" }}
+                      >
+                        {showPassword ? (
+                          <Eye size={16} />
+                        ) : (
+                          <EyeOff size={16} />
+                        )}
                       </span>
                     </label>
                     <input
-                      type={showPassword ? "text":"password"}
+                      type={showPassword ? "text" : "password"}
                       className="form-control form-control-lg"
                       id="password"
                       value={code}

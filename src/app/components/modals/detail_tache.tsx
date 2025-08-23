@@ -21,6 +21,12 @@ export default function DetailTache({
     account_email: string;
   }
 
+  interface Proprietaire {
+    account_name: string;
+    account_image: string;
+    account_email: string;
+  }
+
   interface Collaborateur {
     id: number;
     account_image: string;
@@ -34,9 +40,9 @@ export default function DetailTache({
     description_tache: string;
     echeance_tache: string;
     status_tache: string;
-    priorite_tache: string;
     taches: Sous_Tache[];
     collaborateurs: Collaborateur[];
+    proprietaire: Proprietaire;
   }
 
   // Declaration des variables pour les informations des taches
@@ -56,6 +62,7 @@ export default function DetailTache({
       if (response.status === 200) {
         const data = response.data;
         setDetailTask(data);
+        console.log(data);
       }
     } catch (err) {
       console.log("erreur", err);
@@ -112,6 +119,7 @@ export default function DetailTache({
       if (response.status === 201) {
         setEmailCollaborateur("");
         setMessageErreur("");
+
         await getTask();
       }
     } catch (err: unknown) {
@@ -149,10 +157,14 @@ export default function DetailTache({
   // Fonction pour mettre à jour la tache selectionnée
   const updateTask = async () => {
     try {
-      const response = await api.put(`tache/detail/${tacheID}/`, detailTask);
-
+      const response = await api.put(`tache/detail/${tacheID}/`, {
+        nom_tache: detailTask?.nom_tache,
+        description_tache: detailTask?.description_tache,
+        status_tache: detailTask?.status_tache,
+        echeance_tache: detailTask?.echeance_tache,
+        collaborateurs: detailTask?.collaborateurs,
+      });
       console.log(response.data);
-      setMessageErreur("");
       onRefresh();
       renitializeTacheID();
     } catch (err) {
@@ -162,15 +174,15 @@ export default function DetailTache({
 
   // Fonction pour supprimer la tache selectionnée
   const deleteTask = async () => {
-  try {
-    const response = await api.delete(`tache/detail/${tacheID}/`);
-    if (response.status === 204 || response.status === 200) {
-      window.location.href = "/";
+    try {
+      const response = await api.delete(`tache/detail/${tacheID}/`);
+      if (response.status === 204 || response.status === 200) {
+        window.location.href = "/";
+      }
+    } catch (err) {
+      console.log("Erreur suppression tâche", err);
     }
-  } catch (err) {
-    console.log("Erreur suppression tâche", err);
-  }
-};
+  };
 
   // Function pour normaliser les dates
   const normaliserDate = (date: Date) => {
@@ -340,54 +352,93 @@ export default function DetailTache({
                       </div>
                     )}
                     <h6 className="mt-4" style={{ fontWeight: "bold" }}>
+                      Tâche crée par :
+                    </h6>
+                    <div className="assigned-users">
+                      <div className="d-flex align-items-center mb-2">
+                        <Image
+                          width={5000}
+                          height={5000}
+                          src={`${process.env.NEXT_PUBLIC_BACKEND_PHOTO_PROFIL_URL}${detailTask.proprietaire.account_image}`}
+                          className="avatar me-2"
+                          alt="Image"
+                        />
+                        <span>{detailTask.proprietaire.account_name}</span>
+                      </div>
+                    </div>
+                    <h6 className="mt-4" style={{ fontWeight: "bold" }}>
                       Utilisateurs Assignés
                     </h6>
                     <div className="assigned-users">
-                      {detailTask.collaborateurs.map((collab) => (
-                        <div
-                          className="d-flex align-items-center mb-2"
-                          key={collab.id}
-                        >
-                          <Image
-                            width={5000}
-                            height={5000}
-                            src={`${process.env.NEXT_PUBLIC_BACKEND_PHOTO_PROFIL_URL}${collab.account_image}`}
-                            className="avatar me-2"
-                            alt="Image"
-                          />
+                      {localStorage.getItem("email_connecté") !==
+                      detailTask.proprietaire.account_email
+                        ? detailTask.collaborateurs.map((collab) => (
+                            <div
+                              className="d-flex align-items-center mb-2"
+                              key={collab.id}
+                            >
+                              <Image
+                                width={5000}
+                                height={5000}
+                                src={`${process.env.NEXT_PUBLIC_BACKEND_PHOTO_PROFIL_URL}${collab.account_image}`}
+                                className="avatar me-2"
+                                alt="Image"
+                              />
 
-                          {collab.account_name && (
-                            <span>{collab.account_name}</span>
-                          )}
-                          <button
-                            className="btn btn-sm btn-outline-danger ms-auto"
-                            onClick={() =>
-                              deleteCollaborateur(collab.account_email)
-                            }
-                          >
-                            <i className="bi bi-x" />
-                          </button>
-                        </div>
-                      ))}
+                              {collab.account_name && (
+                                <span>{collab.account_name}</span>
+                              )}
+                            </div>
+                          ))
+                        : detailTask.collaborateurs.map((collab) => (
+                            <div
+                              className="d-flex align-items-center mb-2"
+                              key={collab.id}
+                            >
+                              <Image
+                                width={5000}
+                                height={5000}
+                                src={`${process.env.NEXT_PUBLIC_BACKEND_PHOTO_PROFIL_URL}${collab.account_image}`}
+                                className="avatar me-2"
+                                alt="Image"
+                              />
+
+                              {collab.account_name && (
+                                <span>{collab.account_name}</span>
+                              )}
+                              <button
+                                className="btn btn-sm btn-outline-danger ms-auto"
+                                onClick={() =>
+                                  deleteCollaborateur(collab.account_email)
+                                }
+                              >
+                                <i className="bi bi-x" />
+                              </button>
+                            </div>
+                          ))}
                     </div>
-                    <div className="input-group mt-2">
-                      <input
-                        type="email"
-                        className="form-control"
-                        placeholder="Email du collaborateur"
-                        value={emailCollaborateur}
-                        onChange={(e) => {
-                          setEmailCollaborateur(e.target.value);
-                        }}
-                      />
-                      <button
-                        className="btn btn-outline-success"
-                        type="button"
-                        onClick={addCollaborateur}
-                      >
-                        <i className="bi bi-plus" />
-                      </button>
-                    </div>
+                    {localStorage.getItem("email_connecté") ===
+                      detailTask.proprietaire.account_email && (
+                      <div className="input-group mt-2">
+                        <input
+                          type="email"
+                          className="form-control"
+                          placeholder="Email du collaborateur"
+                          value={emailCollaborateur}
+                          onChange={(e) => {
+                            setEmailCollaborateur(e.target.value);
+                          }}
+                        />
+                        <button
+                          className="btn btn-outline-success"
+                          type="button"
+                          onClick={addCollaborateur}
+                        >
+                          <i className="bi bi-plus" />
+                        </button>
+                      </div>
+                    )}
+
                     {messageErreur ? (
                       <div style={{ fontSize: "10px", color: "red" }}>
                         {messageErreur}
