@@ -8,6 +8,7 @@ import { useState, useEffect } from "react";
 import { AxiosError } from "axios";
 import api from "@/lib/api";
 import { clearTokens } from "@/lib/auth";
+import Preloader from "./preloader/preloader";
 
 export default function Sidebar() {
   interface Compte {
@@ -18,6 +19,7 @@ export default function Sidebar() {
 
   const [compte, setCompte] = useState<Compte>({});
   const router = useRouter();
+  const [showPreloader, setShowPreloader] = useState(false)
 
   const getCompte = async () => {
     try {
@@ -66,6 +68,9 @@ export default function Sidebar() {
 
   return (
     <>
+      {
+        showPreloader && <Preloader></Preloader>
+      }
       <nav className="sidebar bg-dark d-flex flex-column p-3">
         <h4 className="text-white mb-4">
           <i className="bi bi-check2-square me-2" />
@@ -97,7 +102,7 @@ export default function Sidebar() {
           </Link>
           <ul className="dropdown-menu dropdown-menu-dark text-small shadow">
             <li>
-              <Link className="dropdown-item" href="/profil">
+              <Link className="dropdown-item" href="/profil" onClick={() => setShowPreloader(true)}>
                 Profil
               </Link>
             </li>

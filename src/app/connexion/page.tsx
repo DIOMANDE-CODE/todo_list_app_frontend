@@ -22,7 +22,7 @@ export default function Connexion() {
   const [showPreloader, setShowPreloader] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
-    setShowPreloader(true);
+    setShowPreloader(true)
     e.preventDefault();
 
     try {
@@ -42,6 +42,8 @@ export default function Connexion() {
         setErreur("");
       }
     } catch (err: unknown) {
+      setShowPreloader(false)
+      setShowPassword(false);
       const axiosError = err as AxiosError<ErrorResponse>;
       const status = axiosError.response?.status;
       const errorData = axiosError.response?.data;
@@ -53,17 +55,16 @@ export default function Connexion() {
         setErreur("Erreur de connexion");
         setAccount_email("");
         setPassword("");
+        setShowPassword(false);
       }
     } finally {
-      setShowPassword(false);
+      // setShowPreloader(false);
     }
   };
 
   return (
     <div className="auth-body">
-      {
-        showPreloader && <Preloader></Preloader>
-      }
+      {showPreloader && <Preloader></Preloader>}
       <div className="container">
         <div className="row justify-content-center align-items-center vh-100">
           <div className="col-md-5 col-lg-6">
@@ -121,9 +122,9 @@ export default function Connexion() {
                     />
                   </div>
                   <div className="d-flex justify-content-between align-items-center mb-4">
-                    <a href="/change_password/reset_password/" className="small">
-                      Mot de passe oublié ?
-                    </a>
+                    <Link href="/change_password/reset_password" className="small">
+                      Changer de mot de passe ?
+                    </Link>
                   </div>
                   <div className="d-grid">
                     <button type="submit" className="btn btn-primary btn-lg">

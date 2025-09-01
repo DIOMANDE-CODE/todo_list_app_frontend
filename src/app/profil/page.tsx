@@ -172,8 +172,8 @@ export default function Profil() {
                     </div>
                   </div>
                   <hr />
-                  <h5 className="mt-4">Changer le mot de passe</h5>
-                  <div className="row">
+                  {/* <h5 className="mt-4">Changer le mot de passe</h5> */}
+                  {/* <div className="row">
                     <div className="col-md-6">
                       <div className="mb-3">
                         <label htmlFor="currentPassword" className="form-label">
@@ -212,7 +212,7 @@ export default function Profil() {
                         />
                       </div>
                     </div>
-                  </div>
+                  </div> */}
                   <button
                     type="submit"
                     className="btn btn-primary mt-3"

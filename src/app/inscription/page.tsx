@@ -36,12 +36,15 @@ export default function Inscription() {
       );
 
       if (response.data) {
+        setShowPreloader(false);
         setSuccessMessage(response.data.message || "");
       }
       setNom("");
       setEmail("");
       setCode("");
     } catch (err: unknown) {
+      setShowPreloader(false);
+
       const axiosError = err as AxiosError<ErrorResponse>;
       const status = axiosError.response?.status;
       const errorData = axiosError.response?.data;
