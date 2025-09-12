@@ -90,7 +90,7 @@ export default function Profil() {
       <Sidebar></Sidebar>
       <main className="main-content p-4">
         <header className="d-flex justify-content-between align-items-center pb-3 mb-4 border-bottom">
-          <h1 className="h2">Mon Profil</h1>
+          <h1 className="h2 mx-auto">Mon Profil</h1>
         </header>
         <div className="row">
           <div className="col-lg-8">

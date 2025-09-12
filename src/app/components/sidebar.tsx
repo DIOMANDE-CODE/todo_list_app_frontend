@@ -2,13 +2,11 @@
 
 import Image from "next/image";
 import Link from "next/link";
-
 import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { AxiosError } from "axios";
 import api from "@/lib/api";
 import { clearTokens } from "@/lib/auth";
-import Preloader from "./preloader/preloader";
 
 export default function Sidebar() {
   interface Compte {
@@ -18,23 +16,17 @@ export default function Sidebar() {
   }
 
   const [compte, setCompte] = useState<Compte>({});
+  const [mobileOpen, setMobileOpen] = useState(false);
   const router = useRouter();
-  const [showPreloader, setShowPreloader] = useState(false)
+  const sidebarRef = useRef<HTMLDivElement>(null);
 
   const getCompte = async () => {
     try {
-      const response = await api.get("api/users/info/")
-      const data = response.data;
-      console.log(data);
-      
-      localStorage.setItem("email_connecté",data.account_email)
-      setCompte(data);
+      const response = await api.get("api/users/info/");
+      setCompte(response.data);
     } catch (err: unknown) {
       const axiosError = err as AxiosError;
-      const status = axiosError.response?.status;
-      if (status === 400) {
-        console.log(axiosError);
-      }
+      if (axiosError.response?.status === 400) console.log(axiosError);
     }
   };
 
@@ -42,11 +34,7 @@ export default function Sidebar() {
     e.preventDefault();
     try {
       const refresh = localStorage.getItem("refresh");
-      if (refresh){
-        await api.post("api/users/logout/",{
-          refresh:refresh
-        })
-      }
+      if (refresh) await api.post("api/users/logout/", { refresh });
     } catch (error) {
       console.error("Erreur lors de la déconnexion :", error);
     } finally {
@@ -55,9 +43,27 @@ export default function Sidebar() {
     }
   }
 
+  // Fermer le menu hamburger lorsqu'on clique en dehors
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        mobileOpen &&
+        sidebarRef.current &&
+        !sidebarRef.current.contains(event.target as Node)
+      ) {
+        setMobileOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [mobileOpen]);
+
   useEffect(() => {
     getCompte();
-  },[]);
+  }, []);
 
   const previewImage =
     compte.account_image instanceof File
@@ -68,11 +74,25 @@ export default function Sidebar() {
 
   return (
     <>
-      {
-        showPreloader && <Preloader></Preloader>
-      }
-      <nav className="sidebar bg-dark d-flex flex-column p-3">
-        <h4 className="text-white mb-4">
+      {/* Bouton hamburger mobile */}
+      <button
+        className="d-md-none btn btn-dark position-fixed top-0 start-0 m-2 z-3"
+        onClick={() => setMobileOpen(!mobileOpen)}
+      >
+        <i className="bi bi-list"></i>
+      </button>
+
+      {/* Sidebar */}
+      <nav
+        ref={sidebarRef}
+        className={`sidebar bg-dark d-flex flex-column p-3 position-fixed h-100 transition`}
+        style={{
+          width: "250px",
+          zIndex: 1020,
+          left: mobileOpen ? "0" : "-260px",
+        }}
+      >
+        <h4 className="text-white mb-4 d-flex align-items-center">
           <i className="bi bi-check2-square me-2" />
           To Do App
         </h4>
@@ -82,9 +102,10 @@ export default function Sidebar() {
               <i className="bi bi-speedometer2 me-2" /> Tâches
             </Link>
           </li>
+          {/* autres liens ici */}
         </ul>
         <hr className="text-white" />
-        <div className="dropdown">
+        <div className="dropdown mt-auto">
           <Link
             href="#"
             className="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
@@ -93,7 +114,7 @@ export default function Sidebar() {
           >
             <Image
               src={previewImage}
-              alt="Image 1"
+              alt="Profil"
               width={32}
               height={32}
               className="rounded-circle me-2"
@@ -102,7 +123,7 @@ export default function Sidebar() {
           </Link>
           <ul className="dropdown-menu dropdown-menu-dark text-small shadow">
             <li>
-              <Link className="dropdown-item" href="/profil" onClick={() => setShowPreloader(true)}>
+              <Link className="dropdown-item" href="/profil">
                 Profil
               </Link>
             </li>
@@ -117,6 +138,17 @@ export default function Sidebar() {
           </ul>
         </div>
       </nav>
+
+      <style jsx>{`
+        .transition {
+          transition: left 0.3s ease-in-out;
+        }
+        @media (min-width: 768px) {
+          .sidebar {
+            left: 0 !important; /* Toujours visible sur PC */
+          }
+        }
+      `}</style>
     </>
   );
 }
