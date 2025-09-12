@@ -51,6 +51,7 @@ export default function DetailTache({
   const [nom_sous_tache, setNomSousTache] = useState("");
   const [emailCollaborateur, setEmailCollaborateur] = useState("");
   const [messageErreur, setMessageErreur] = useState("");
+  const [emailConnecte, setEmailConnecte] = useState<string | null>(null);
   const timeMessageErreur = "delai dépassé";
   const router = useRouter();
 
@@ -191,6 +192,7 @@ export default function DetailTache({
 
   useEffect(() => {
     const access = getAccessToken();
+    setEmailConnecte(localStorage.getItem("email_connecté"));
     if (tacheID === null) {
       return;
     }
@@ -417,7 +419,7 @@ export default function DetailTache({
                             </div>
                           ))}
                     </div>
-                    {localStorage.getItem("email_connecté") ===
+                    {emailConnecte ===
                       detailTask.proprietaire.account_email && (
                       <div className="input-group mt-2">
                         <input
@@ -453,15 +455,17 @@ export default function DetailTache({
               </div>
             )}
             <div className="modal-footer">
-              <button
-                type="button"
-                className="btn btn-danger me-auto"
-                aria-label="Close"
-                data-bs-dismiss="modal"
-                onClick={deleteTask}
-              >
-                <i className="bi bi-trash" /> Supprimer
-              </button>
+              {emailConnecte === detailTask?.proprietaire.account_email && (
+                <button
+                  type="button"
+                  className="btn btn-danger me-auto"
+                  aria-label="Close"
+                  data-bs-dismiss="modal"
+                  onClick={deleteTask}
+                >
+                  <i className="bi bi-trash" /> Supprimer
+                </button>
+              )}
 
               <button
                 type="button"
