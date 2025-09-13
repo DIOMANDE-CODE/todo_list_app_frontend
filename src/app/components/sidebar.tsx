@@ -7,6 +7,7 @@ import { useState, useEffect, useRef } from "react";
 import { AxiosError } from "axios";
 import api from "@/lib/api";
 import { clearTokens } from "@/lib/auth";
+import Preloader from "./preloader/preloader";
 
 export default function Sidebar() {
   interface Compte {
@@ -17,6 +18,7 @@ export default function Sidebar() {
 
   const [compte, setCompte] = useState<Compte>({});
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [showPreloader,setShowPreloader] = useState(false)
   const router = useRouter();
   const sidebarRef = useRef<HTMLDivElement>(null);
 
@@ -31,6 +33,7 @@ export default function Sidebar() {
   };
 
   async function handleLogout(e: React.MouseEvent) {
+    setShowPreloader(true)
     e.preventDefault();
     try {
       const refresh = localStorage.getItem("refresh");
@@ -40,6 +43,7 @@ export default function Sidebar() {
     } finally {
       clearTokens();
       router.push("/connexion");
+      // setShowPreloader(false)
     }
   }
 
@@ -74,6 +78,10 @@ export default function Sidebar() {
 
   return (
     <>
+      {/* Preloader */}
+      {
+        showPreloader && <Preloader></Preloader>
+      }
       {/* Bouton hamburger mobile */}
       <button
         className="d-md-none btn btn-dark position-fixed top-0 start-0 m-2 z-3"
@@ -98,7 +106,7 @@ export default function Sidebar() {
         </h4>
         <ul className="nav nav-pills flex-column mb-auto">
           <li className="nav-item">
-            <Link href="/" className="nav-link active" aria-current="page">
+            <Link href="/" className="nav-link active" aria-current="page" onClick={() => setShowPreloader(true)}>
               <i className="bi bi-speedometer2 me-2" /> Tâches
             </Link>
           </li>
@@ -119,11 +127,11 @@ export default function Sidebar() {
               height={32}
               className="rounded-circle me-2"
             />
-            <strong>{compte.account_name}</strong>
+            <strong>{compte.account_name?.split(' ')[0]}</strong>
           </Link>
           <ul className="dropdown-menu dropdown-menu-dark text-small shadow">
             <li>
-              <Link className="dropdown-item" href="/profil">
+              <Link className="dropdown-item" href="/profil" onClick={() => setShowPreloader(true)}>
                 Profil
               </Link>
             </li>

@@ -44,18 +44,16 @@ export default function TacheAFaire({
       const response = await api.get("tache/list/");
 
       const data = response.data;
-      console.log(response.status);
+      console.log("data ", response.data);
 
       if (response.status === 204) {
         console.log(data);
-
         return;
       } else {
         const tache_to_do = data.filter(
           (tache: Tache) => tache.status_tache === "à faire"
         );
         console.log("tache à faire:", tache_to_do);
-
         setTasks(tache_to_do);
       }
     } catch (err) {
@@ -105,7 +103,7 @@ export default function TacheAFaire({
         </h5>
 
         {tasks.length !== 0 ? (
-          tasks.map((tache, index) => (
+          tasks.slice().sort((a,b) => new Date(a.echeance_tache).getTime() - new Date(b.echeance_tache).getTime()).map((tache, index) => (
             <div
               className="task-card card mb-3"
               data-bs-toggle="modal"
@@ -131,6 +129,7 @@ export default function TacheAFaire({
                     )
                   )}
                 </div>
+                <span className="badge bg-secondary text-white">Modifier</span>
                 <p className="card-text small text-muted">
                   {tache.description_tache}
                 </p>

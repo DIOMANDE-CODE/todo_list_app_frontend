@@ -95,7 +95,7 @@ export default function TacheEnCours({
             <span className="badge bg-secondary ms-1">{tasks.length}</span>
           </h5>
           {tasks.length !== 0 ? (
-            tasks.map((tache, index) => (
+            tasks.slice().sort((a,b) => new Date(a.echeance_tache).getTime() - new Date(b.echeance_tache).getTime()).map((tache, index) => (
               <div
                 className="task-card card mb-3"
                 data-bs-toggle="modal"
@@ -123,6 +123,7 @@ export default function TacheEnCours({
                       )
                     )}
                   </div>
+                  <span className="badge bg-secondary text-white">Modifier</span>
                   <p className="card-text small text-muted">
                     {tache.description_tache}
                   </p>

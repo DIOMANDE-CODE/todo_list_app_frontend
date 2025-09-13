@@ -2,6 +2,7 @@ import { AxiosError } from "axios";
 import React from "react";
 import { useState } from "react";
 import api from "@/lib/api";
+import Preloader from "../preloader/preloader";
 
 // liste des status
 const statuts = [
@@ -17,9 +18,11 @@ export default function AjoutTache({ onRefresh }: { onRefresh: () => void }) {
   const [echeanceTache, setEcheanceTache] = useState("");
   const timeMessageErreur = "échéance depassée";
   const [successMessage, setSuccessMessage] = useState("");
+  const [showPreloader,setShowPreloader] = useState(false)
 
   // Fonction de creation d'une tache
   const addTask = async (e: React.FormEvent) => {
+    setShowPreloader(true)
     setSuccessMessage("");
     setStatusTache(statusTache)
 
@@ -42,8 +45,10 @@ export default function AjoutTache({ onRefresh }: { onRefresh: () => void }) {
         setStatusTache("");
         setEcheanceTache("");
         setSuccessMessage("Nouvelle tâche ajoutée");
+        setShowPreloader(false)
       }
     } catch (err: unknown) {
+      setShowPreloader(false)
       const axiosError = err as AxiosError;
       const status = axiosError.response?.status;
       console.log(statusTache);
@@ -75,6 +80,9 @@ export default function AjoutTache({ onRefresh }: { onRefresh: () => void }) {
 
   return (
     <>
+      {
+        showPreloader && <Preloader></Preloader>
+      }
       <form onSubmit={addTask}>
         <div
           className="modal fade"

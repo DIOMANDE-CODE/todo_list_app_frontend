@@ -37,6 +37,7 @@ export default function Connexion() {
       if (res.data) {
         setTokens(res.data.access_token, res.data.refresh_token);
         router.push("/");
+        localStorage.setItem("email_connecté",account_email)
         setAccount_email("");
         setPassword("");
         setErreur("");
@@ -53,8 +54,6 @@ export default function Connexion() {
       } else {
         console.log("Erreur de connexion :", axiosError);
         setErreur("Erreur de connexion");
-        setAccount_email("");
-        setPassword("");
         setShowPassword(false);
       }
     } finally {

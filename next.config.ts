@@ -4,6 +4,7 @@ const nextConfig: NextConfig = {
   devIndicators: false,
   images: {
     remotePatterns: [
+      // Local dev
       {
         protocol: 'http',
         hostname: 'localhost',
@@ -11,22 +12,23 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'http',
-        hostname: '192.168.100.18',
+        hostname: '127.0.0.1',
         pathname: '/media/**',
       },
-        {
-        protocol: 'http',
-        hostname: '14.14.14.37',
+      // Backend ngrok
+      {
+        protocol: 'https',
+        hostname: 'streaming-approximate-perl-detective.trycloudflare.com',
         pathname: '/media/**',
       },
+      // Avatars génériques
       {
         protocol: 'https',
         hostname: 'i.pravatar.cc',
         pathname: '/**',
       },
     ],
-  }
-  /* config options here */
+  },
 };
 
 export default nextConfig;

@@ -21,7 +21,7 @@ export default function Profil() {
   const [compte, setCompte] = useState<Compte>({});
   const [successMessage, setSuccessMessage] = useState("");
   const router = useRouter();
-  const [loading, setLoading] = useState(true);
+  const [showPreloader, setShowPreloader] = useState(true)
 
   // Fonction pour charger les données de l"utilisateur
   const getCompte = async () => {
@@ -37,11 +37,12 @@ export default function Profil() {
         console.log(axiosError);
       }
     } finally {
-      setLoading(false);
+      setShowPreloader(false);
     }
   };
 
   const updateProfil = async (e: React.FormEvent) => {
+    setShowPreloader(true)
     e.preventDefault();
     const formData = new FormData();
     if (compte.account_email && compte.account_name) {
@@ -59,8 +60,10 @@ export default function Profil() {
       if (response.data) {
         await getCompte();
         setSuccessMessage("Mise à jour effectuée avec succès");
+        setShowPreloader(false)
       }
     } catch (err: unknown) {
+      setShowPreloader(false)
       const axiosError = err as AxiosError;
       const status = axiosError.response?.status;
       if (status === 400) {
@@ -86,7 +89,7 @@ export default function Profil() {
   }, []);
   return (
     <div className="d-flex">
-      {loading && <Preloader></Preloader>}
+      {showPreloader && <Preloader></Preloader>}
       <Sidebar></Sidebar>
       <main className="main-content p-4">
         <header className="d-flex justify-content-between align-items-center pb-3 mb-4 border-bottom">

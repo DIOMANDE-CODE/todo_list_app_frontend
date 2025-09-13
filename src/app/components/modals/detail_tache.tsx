@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { AxiosError } from "axios";
 import api from "@/lib/api";
 import { getAccessToken } from "@/lib/auth";
+import Preloader from "../preloader/preloader";
 
 export default function DetailTache({
   tacheID,
@@ -53,6 +54,7 @@ export default function DetailTache({
   const [messageErreur, setMessageErreur] = useState("");
   const [emailConnecte, setEmailConnecte] = useState<string | null>(null);
   const timeMessageErreur = "delai dépassé";
+  const [showPreloader, setShowPreloader] = useState(false);
   const router = useRouter();
 
   const getTask = async () => {
@@ -157,6 +159,7 @@ export default function DetailTache({
 
   // Fonction pour mettre à jour la tache selectionnée
   const updateTask = async () => {
+    setShowPreloader(true);
     try {
       const response = await api.put(`tache/detail/${tacheID}/`, {
         nom_tache: detailTask?.nom_tache,
@@ -168,6 +171,7 @@ export default function DetailTache({
       console.log(response.data);
       onRefresh();
       renitializeTacheID();
+      setShowPreloader(false);
     } catch (err) {
       console.log(err);
     }
@@ -175,13 +179,16 @@ export default function DetailTache({
 
   // Fonction pour supprimer la tache selectionnée
   const deleteTask = async () => {
+    setShowPreloader(true);
     try {
       const response = await api.delete(`tache/detail/${tacheID}/`);
       if (response.status === 204 || response.status === 200) {
         window.location.href = "/";
+        // setShowPreloader(false)
       }
     } catch (err) {
       console.log("Erreur suppression tâche", err);
+      setShowPreloader(false);
     }
   };
 
@@ -205,6 +212,7 @@ export default function DetailTache({
 
   return (
     <>
+      {showPreloader && <Preloader></Preloader>}
       <div
         className="modal fade"
         id="taskDetailModal"
@@ -236,11 +244,14 @@ export default function DetailTache({
                       </label>
                     </b>
                     <h5>{detailTask.nom_tache}</h5>
-                    <b>
-                      <label className="form-label small">
-                        Description de la tâche
-                      </label>
-                    </b>
+                    {detailTask.description_tache && (
+                      <b>
+                        <label className="form-label small">
+                          Description de la tâche
+                        </label>
+                      </b>
+                    )}
+
                     <h6 className="text-muted">
                       {detailTask.description_tache}
                     </h6>
@@ -455,7 +466,7 @@ export default function DetailTache({
               </div>
             )}
             <div className="modal-footer">
-              {emailConnecte === detailTask?.proprietaire.account_email && (
+              {emailConnecte === detailTask?.proprietaire.account_email ? (
                 <button
                   type="button"
                   className="btn btn-danger me-auto"
@@ -465,7 +476,7 @@ export default function DetailTache({
                 >
                   <i className="bi bi-trash" /> Supprimer
                 </button>
-              )}
+              ) : null}
 
               <button
                 type="button"
